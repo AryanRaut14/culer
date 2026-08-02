@@ -20,6 +20,16 @@ export async function POST(request: NextRequest) {
         const agent = await createAgent();
         const status = await getAgentStatus();
 
+        if (!status.ollamaStatus.available && !status.hasFallbackCredentials) {
+          controller.enqueue(
+            encoder.encode(
+              'Culer is in degraded mode: Ollama is not available and no cloud API keys are configured yet. Install Ollama or add a free Gemini/Groq key and restart the app.\n\n[mode:cloud-fallback]',
+            ),
+          );
+          controller.close();
+          return;
+        }
+
         const result = await agent.invoke(
           {
             messages: [{ role: 'user', content: message }],

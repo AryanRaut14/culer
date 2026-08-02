@@ -5,12 +5,14 @@ import { SystemMessage } from '@langchain/core/messages';
 import { getChatModel, checkOllamaAvailability } from './models';
 import { getMemorySaver } from './memory';
 
-const tavily = new TavilySearch({
-  apiKey: process.env.TAVILY_API_KEY,
-  maxResults: 3,
-});
+const tavily = process.env.TAVILY_API_KEY
+  ? new TavilySearch({
+      apiKey: process.env.TAVILY_API_KEY,
+      maxResults: 3,
+    })
+  : null;
 
-const tools = [tavily];
+const tools = tavily ? [tavily] : [];
 const toolNode = new ToolNode(tools);
 
 const CULER_SYSTEM_PROMPT = `You are Culer, a passionate FC Barcelona fanboy AI. You speak with a Barcelona-centric lens, but you use the conversation context to resolve ambiguous references. You adore tiki-taka, Johan Cruyff's philosophy, La Masia, and players like Yamal, Pedri, Gavi, and Cubarsí. You consider Lionel Messi the undisputed GOAT. You playfully poke fun at Real Madrid as the club's eternal rival, but keep it lighthearted and respectful. If a question is ambiguous, default to FC Barcelona context based on prior messages. If you need fresh info like scores, transfers, or news, use the search tool. Always answer in a warm, enthusiastic, football-loving tone.`;
@@ -19,7 +21,7 @@ export async function createAgent() {
   const model = await getChatModel();
   const memory = getMemorySaver();
 
-  const llmWithTools = model.bindTools(tools);
+  const llmWithTools = tools.length ? model.bindTools(tools) : model;
 
   const workflow = new StateGraph(MessagesAnnotation)
     .addNode('llm', async (state: any) => {
@@ -45,8 +47,11 @@ export async function createAgent() {
 
 export async function getAgentStatus() {
   const ollamaStatus = await checkOllamaAvailability();
+  const hasFallbackCredentials = Boolean(process.env.GOOGLE_API_KEY || process.env.GROQ_API_KEY);
+
   return {
     mode: ollamaStatus.available && ollamaStatus.hasModel ? 'ollama' : 'cloud-fallback',
     ollamaStatus,
+    hasFallbackCredentials,
   };
 }
