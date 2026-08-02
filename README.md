@@ -13,10 +13,11 @@ Culer is a fully local-first FC Barcelona chatbot. It prefers Ollama on your own
    - Google Gemini: https://aistudio.google.com
    - Groq: https://console.groq.com
    - Tavily: https://tavily.com
-4. Copy the example env file and add your keys:
+4. Create or update your local env file without overwriting existing values:
    ```bash
    cp .env.example .env.local
    ```
+   If .env.local already exists, edit it directly and keep your API keys there. Do not run the copy command again unless you want to reset the file.
 5. Install dependencies:
    ```bash
    npm install
