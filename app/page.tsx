@@ -107,27 +107,27 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-8">
-      <header className="mb-6 rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-2xl">
-        <p className="text-sm uppercase tracking-[0.35em] text-cyan-400">Culer</p>
+      <header className="mb-6 rounded-2xl border border-red-500/30 bg-slate-950/70 p-5 shadow-[0_0_30px_rgba(186,12,47,0.25)] backdrop-blur">
+        <p className="text-sm uppercase tracking-[0.35em] text-red-400">Culer</p>
         <h1 className="mt-2 text-3xl font-semibold text-white">FC Barcelona chatbot</h1>
-        <p className="mt-2 text-sm text-slate-400">Fully local first, with free cloud fallbacks when needed.</p>
-        <div className="mt-4 inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-300">
+        <p className="mt-2 text-sm text-slate-300">Fully local first, with free cloud fallbacks when needed.</p>
+        <div className="mt-4 inline-flex items-center rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-sm text-blue-200">
           {status}
         </div>
       </header>
 
-      <section className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+      <section className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 shadow-2xl backdrop-blur">
         {messages.length === 0 && (
-          <div className="rounded-xl border border-dashed border-slate-700 p-4 text-sm text-slate-400">
+          <div className="rounded-xl border border-dashed border-red-500/30 bg-red-500/10 p-4 text-sm text-slate-200">
             Ask Culer about Barcelona, matchday, transfers, or football philosophy.
           </div>
         )}
         {messages.map((message, index) => (
-          <div key={`${message.role}-${index}`} className={`max-w-[85%] rounded-2xl px-4 py-3 ${message.role === 'user' ? 'ml-auto bg-cyan-600 text-white' : 'bg-slate-800 text-slate-100'}`}>
+          <div key={`${message.role}-${index}`} className={`max-w-[85%] rounded-2xl px-4 py-3 ${message.role === 'user' ? 'ml-auto bg-red-600 text-white' : 'bg-slate-800/90 text-slate-100'}`}>
             <p className="whitespace-pre-wrap text-sm">{message.content}</p>
           </div>
         ))}
-        {loading && <div className="text-sm text-slate-400">Culer is thinking...</div>}
+        {loading && <div className="text-sm text-slate-300">Culer is thinking...</div>}
       </section>
 
       <form
@@ -141,9 +141,9 @@ export default function Home() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Ask about Barcelona, the next match, or Messi..."
-          className="flex-1 rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0"
+          className="flex-1 rounded-xl border border-blue-400/20 bg-slate-950/80 px-4 py-3 text-sm text-white outline-none ring-0"
         />
-        <button type="submit" className="rounded-xl bg-cyan-600 px-4 py-3 text-sm font-medium text-white">
+        <button type="submit" className="rounded-xl bg-gradient-to-r from-red-600 to-blue-600 px-4 py-3 text-sm font-medium text-white">
           Send
         </button>
       </form>
