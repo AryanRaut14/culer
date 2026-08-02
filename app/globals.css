@@ -9,8 +9,8 @@
 body {
   @apply min-h-screen text-slate-100;
   background:
-    linear-gradient(135deg, rgba(4, 17, 41, 0.9), rgba(186, 12, 47, 0.78)),
-    url('https://images.unsplash.com/photo-1548092372-0d1bd40894a3?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    linear-gradient(135deg, rgba(4, 17, 41, 0.92), rgba(186, 12, 47, 0.78)),
+    url('/images/campnou.jpg') center/cover no-repeat;
 }
 
 ::selection {
