@@ -12,23 +12,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Message is required' }, { status: 400 });
   }
 
-  await initializeMemory();
-  const agent = await createAgent();
-  const status = await getAgentStatus();
+  try {
+    await initializeMemory();
+    const agent = await createAgent();
+    const status = await getAgentStatus();
 
-  const result = await agent.invoke(
-    {
-      messages: [{ role: 'user', content: message }],
-    },
-    {
-      configurable: {
-        thread_id: threadId || 'default-thread',
+    const result = await agent.invoke(
+      {
+        messages: [{ role: 'user', content: message }],
       },
-    },
-  );
+      {
+        configurable: {
+          thread_id: threadId || 'default-thread',
+        },
+      },
+    );
 
-  const lastMessage = result.messages[result.messages.length - 1];
-  const reply = typeof lastMessage?.content === 'string' ? lastMessage.content : '...';
+    const lastMessage = result.messages[result.messages.length - 1];
+    const reply = typeof lastMessage?.content === 'string' ? lastMessage.content : '...';
 
-  return NextResponse.json({ reply, mode: status.mode });
+    return NextResponse.json({ reply, mode: status.mode, statusText: status.ollamaStatus.reason || 'Ready' });
+  } catch (error) {
+    return NextResponse.json({
+      reply: 'Culer is unavailable right now. Make sure Ollama is installed or add your free API keys to the environment file.',
+      mode: 'cloud-fallback',
+      statusText: 'Fallback mode',
+    });
+  }
 }
