@@ -53,6 +53,8 @@ export default function Home() {
     setLoading(true);
     setStatus('Thinking...');
 
+    setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -60,11 +62,43 @@ export default function Home() {
         body: JSON.stringify({ message: userMessage.content, threadId }),
       });
 
-      const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply || 'No reply.' }]);
-      setStatus(data.mode === 'ollama' ? 'Using Ollama locally' : 'Using cloud fallback');
+      if (!res.body) throw new Error('No stream body');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let reply = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        reply += decoder.decode(value, { stream: true });
+        setMessages((prev) => {
+          const next = [...prev];
+          const last = next[next.length - 1];
+          if (last?.role === 'assistant') {
+            next[next.length - 1] = { ...last, content: reply.replace(/\n\n\[mode:[^\]]+\]/, '') };
+          }
+          return next;
+        });
+      }
+
+      const text = decoder.decode();
+      if (text) {
+        reply += text;
+      }
+
+      const modeMatch = reply.match(/\[mode:([^\]]+)\]/);
+      const mode = modeMatch?.[1] === 'ollama' ? 'Using Ollama locally' : 'Using cloud fallback';
+      setStatus(mode);
     } catch (error) {
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'The chat is currently unavailable. Check your Ollama setup and API keys.' }]);
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        if (last?.role === 'assistant') {
+          next[next.length - 1] = { ...last, content: 'The chat is currently unavailable. Check your Ollama setup and API keys.' };
+        }
+        return next;
+      });
       setStatus('Error');
     } finally {
       setLoading(false);
