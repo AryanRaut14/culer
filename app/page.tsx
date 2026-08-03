@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import BarcelonaLogo from '../images/barcelonalogo.png';
+import CampNouBackground from '../images/campnou.jpg';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -107,47 +110,82 @@ export default function Home() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-8">
-      <header className="mb-6 rounded-2xl border border-red-500/30 bg-slate-950/70 p-5 shadow-[0_0_30px_rgba(186,12,47,0.25)] backdrop-blur">
-        <p className="text-sm uppercase tracking-[0.35em] text-red-400">Culer</p>
-        <h1 className="mt-2 text-3xl font-semibold text-white">FC Barcelona chatbot</h1>
-        <p className="mt-2 text-sm text-slate-300">Fully local first, with free cloud fallbacks when needed.</p>
-        <div className="mt-4 inline-flex items-center rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-sm text-blue-200">
-          {status}
-        </div>
-      </header>
-
-      <section className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 shadow-2xl backdrop-blur">
-        {messages.length === 0 && (
-          <div className="rounded-xl border border-dashed border-red-500/30 bg-red-500/10 p-4 text-sm text-slate-200">
-            Ask Culer about Barcelona, matchday, transfers, or football philosophy.
+    <main
+      className="relative flex min-h-screen flex-col overflow-hidden bg-cover bg-center bg-no-repeat font-sans"
+      style={{
+        backgroundImage: `url(${CampNouBackground.src})`,
+        backgroundAttachment: 'fixed',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="absolute inset-0 bg-slate-950/35" />
+      <div className="relative z-10 flex-1 px-4 py-8 mx-auto w-full max-w-5xl flex flex-col">
+        {/* Header */}
+        <header className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between rounded-2xl border-2 border-red-600/50 bg-blue-950/70 p-6 shadow-2xl backdrop-blur-lg">
+          <div className="flex items-center gap-5">
+            <Image
+              src={BarcelonaLogo}
+              alt="FC Barcelona Logo"
+              width={70}
+              height={70}
+              className="object-contain"
+            />
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-500">Culer</p>
+              <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-white md:text-4xl">FC Barcelona Assistant</h1>
+              <p className="mt-2 text-base text-blue-100">Fully local first, with free cloud fallbacks when needed.</p>
+            </div>
           </div>
-        )}
-        {messages.map((message, index) => (
-          <div key={`${message.role}-${index}`} className={`max-w-[85%] rounded-2xl px-4 py-3 ${message.role === 'user' ? 'ml-auto bg-red-600 text-white' : 'bg-slate-800/90 text-slate-100'}`}>
-            <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+          <div className="mt-5 md:mt-0 inline-flex self-start md:self-center items-center rounded-full border border-red-500/40 bg-red-600/20 px-4 py-1.5 text-sm font-medium text-red-200">
+            {status}
           </div>
-        ))}
-        {loading && <div className="text-sm text-slate-300">Culer is thinking...</div>}
-      </section>
+        </header>
 
-      <form
-        className="mt-4 flex gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          sendMessage();
-        }}
-      >
-        <input
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask about Barcelona, the next match, or Messi..."
-          className="flex-1 rounded-xl border border-blue-400/20 bg-slate-950/80 px-4 py-3 text-sm text-white outline-none ring-0"
-        />
-        <button type="submit" className="rounded-xl bg-gradient-to-r from-red-600 to-blue-600 px-4 py-3 text-sm font-medium text-white">
-          Send
-        </button>
-      </form>
+        {/* Chat Container */}
+        <section className="flex-1 space-y-4 overflow-y-auto rounded-2xl border-2 border-blue-900/60 bg-blue-950/70 p-5 shadow-2xl backdrop-blur-lg">
+          {messages.length === 0 && (
+            <div className="rounded-xl border border-dashed border-red-500/40 bg-red-950/30 p-5 text-base text-blue-100">
+              <strong className="text-red-400">Visca el Barça!</strong> Ask me about Barcelona&apos;s history, current squad, matchday info, transfers, or the club&apos;s iconic football philosophy.
+            </div>
+          )}
+          {messages.map((message, index) => (
+            <div
+              key={`${message.role}-${index}`}
+              className={`max-w-[85%] rounded-2xl px-5 py-3.5 border ${
+                message.role === 'user'
+                  ? 'ml-auto bg-red-700 border-red-500/50 text-white shadow-lg'
+                  : 'bg-blue-900/90 border-blue-700/50 text-blue-50 shadow-md'
+              }`}
+            >
+              <p className="whitespace-pre-wrap text-base leading-relaxed">{message.content}</p>
+            </div>
+          ))}
+          {loading && <div className="text-sm text-red-400 italic animate-pulse px-2">Culer is thinking...</div>}
+        </section>
+
+        {/* Input Form */}
+        <form
+          className="mt-5 flex gap-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            sendMessage();
+          }}
+        >
+          <input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Ask about Barcelona, the next match, or Messi..."
+            className="flex-1 rounded-xl border-2 border-red-600/40 bg-blue-950/70 px-5 py-4 text-base text-white placeholder-blue-300 outline-none focus:border-red-500 transition"
+          />
+          <button
+            type="submit"
+            className="rounded-xl bg-gradient-to-r from-red-600 to-blue-700 px-8 py-4 text-base font-bold text-white shadow-lg hover:from-red-700 hover:to-blue-800 transition duration-150"
+          >
+            Send
+          </button>
+        </form>
+      </div>
     </main>
   );
 }
