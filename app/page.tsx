@@ -33,8 +33,9 @@ export default function Home() {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ message: 'ping', threadId }),
         });
-        const data = await res.json();
-        setStatus(data.mode === 'ollama' ? 'Using Ollama locally' : 'Using cloud fallback');
+        const text = await res.text();
+        const modeMatch = text.match(/\[mode:([^\]]+)\]/);
+        setStatus(modeMatch?.[1] === 'ollama' ? 'Using Ollama locally' : 'Using cloud fallback');
       } catch {
         setStatus('Waiting for model setup');
       }
