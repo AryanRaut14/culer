@@ -4,6 +4,8 @@ import { ChatOllama } from '@langchain/ollama';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { ChatGroq } from '@langchain/groq';
 
+export type ChatProvider = 'auto' | 'ollama' | 'google' | 'groq';
+
 function loadEnvFromDisk() {
   const envFilePath = path.resolve(process.cwd(), '.env.local');
   if (!fs.existsSync(envFilePath)) {
@@ -71,20 +73,37 @@ function makeGroqModel() {
   });
 }
 
-export async function getChatModel() {
+export async function getChatModel(provider: ChatProvider = 'auto') {
   loadEnvFromDisk();
 
   const ollamaStatus = await checkOllamaAvailability();
-  if (ollamaStatus.available && ollamaStatus.hasModel) {
-    return makeOllamaModel();
+  const providers: ChatProvider[] = [];
+
+  if (provider === 'ollama' || provider === 'auto') {
+    providers.push('ollama');
+  }
+  if (provider === 'google' || provider === 'auto') {
+    providers.push('google');
+  }
+  if (provider === 'groq' || provider === 'auto') {
+    providers.push('groq');
   }
 
-  if (process.env.GOOGLE_API_KEY) {
-    return makeGeminiModel();
-  }
+  for (const candidate of providers) {
+    if (candidate === 'ollama') {
+      if (ollamaStatus.available && ollamaStatus.hasModel) {
+        return makeOllamaModel();
+      }
+      continue;
+    }
 
-  if (process.env.GROQ_API_KEY) {
-    return makeGroqModel();
+    if (candidate === 'google' && normalizeEnvValue(process.env.GOOGLE_API_KEY)) {
+      return makeGeminiModel();
+    }
+
+    if (candidate === 'groq' && normalizeEnvValue(process.env.GROQ_API_KEY)) {
+      return makeGroqModel();
+    }
   }
 
   throw new Error('No chat model available. Install Ollama or add a Google/Groq API key.');
