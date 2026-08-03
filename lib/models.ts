@@ -68,6 +68,9 @@ function makeGroqModel() {
     model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
     temperature: 0.7,
     apiKey: normalizeEnvValue(process.env.GROQ_API_KEY),
+  });
+}
+
 export async function getChatModel() {
   loadEnvFromDisk();
 
