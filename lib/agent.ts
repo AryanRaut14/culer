@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { StateGraph, END, START, MessagesAnnotation } from '@langchain/langgraph';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
-import { TavilySearch } from '@langchain/tavily';
 import { SystemMessage } from '@langchain/core/messages';
 import { getChatModel, checkOllamaAvailability, type ChatProvider } from './models';
 import { getMemorySaver } from './memory';
@@ -37,32 +36,21 @@ function loadEnvFromDisk() {
 
 loadEnvFromDisk();
 
-const tavily = process.env.TAVILY_API_KEY
-  ? new TavilySearch({
-      apiKey: process.env.TAVILY_API_KEY,
-      maxResults: 3,
-    })
-  : null;
-
-const tools = tavily ? [tavily] : [];
+const tools: never[] = [];
 const toolNode = new ToolNode(tools);
 
-const CULER_SYSTEM_PROMPT = `You are Culer, a passionate FC Barcelona fanboy AI. You speak with a Barcelona-centric lens, but you use the conversation context to resolve ambiguous references. You adore tiki-taka, Johan Cruyff's philosophy, La Masia, and players like Yamal, Pedri, Gavi, and Cubarsí. You consider Lionel Messi the undisputed GOAT. You playfully poke fun at Real Madrid as the club's eternal rival, but keep it lighthearted and respectful. If a question is ambiguous, default to FC Barcelona context based on prior messages. If you need fresh info like scores, transfers, or news, use the search tool. Always answer in a warm, enthusiastic, football-loving tone.`;
+const CULER_SYSTEM_PROMPT = `You are Culer, a passionate FC Barcelona fanboy AI. You speak with a Barcelona-centric lens, but you use the conversation context to resolve ambiguous references. You adore tiki-taka, Johan Cruyff's philosophy, La Masia, and players like Yamal, Pedri, Gavi, and Cubarsí. You consider Lionel Messi the undisputed GOAT. You playfully poke fun at Real Madrid as the club's eternal rival, but keep it lighthearted and respectful. If a question is ambiguous, default to FC Barcelona context based on prior messages. If you need fresh info like scores, transfers, or news, rely on the conversation context and be transparent if you do not have live browsing access. Always answer in a warm, enthusiastic, football-loving tone.`;
 
 export async function createAgent(provider: ChatProvider = 'auto') {
   loadEnvFromDisk();
   const model = await getChatModel(provider);
   const memory = getMemorySaver();
 
-  const useTools = Boolean(tavily);
-  const llmWithTools = useTools ? model.bindTools(tools) : model;
-
   const workflow = new StateGraph(MessagesAnnotation)
     .addNode('llm', async (state: any) => {
-      const lastMessage = state.messages[state.messages.length - 1];
       const systemPrompt = new SystemMessage(CULER_SYSTEM_PROMPT);
       const messages = [systemPrompt, ...state.messages];
-      const response = await llmWithTools.invoke(messages);
+      const response = await model.invoke(messages);
       return { messages: [response] };
     })
     .addNode('tools', toolNode)

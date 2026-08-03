@@ -12,7 +12,6 @@ Culer is a fully local-first FC Barcelona chatbot. It prefers Ollama on your own
 3. Get free API keys:
    - Google Gemini: https://aistudio.google.com
    - Groq: https://console.groq.com
-   - Tavily: https://tavily.com
 4. Create or update your local env file without overwriting existing values:
    ```bash
    cp .env.example .env.local
