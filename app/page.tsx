@@ -124,13 +124,16 @@ export default function Home() {
         {/* Header */}
         <header className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between rounded-2xl border-2 border-red-600/50 bg-blue-950/70 p-6 shadow-2xl backdrop-blur-lg">
           <div className="flex items-center gap-5">
-            <Image
-              src={BarcelonaLogo}
-              alt="FC Barcelona Logo"
-              width={70}
-              height={70}
-              className="object-contain"
-            />
+           <div className="flex h-[70px] w-[70px] shrink-0 items-center justify-center p-0">
+              <Image
+                src={BarcelonaLogo}
+                alt="FC Barcelona Logo"
+                width={70}
+                height={70}
+                className="h-full w-full object-contain"
+                unoptimized
+              />
+            </div>
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-500">Culer</p>
               <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-white md:text-4xl">FC Barcelona Assistant</h1>
