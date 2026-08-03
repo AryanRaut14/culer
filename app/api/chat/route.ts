@@ -56,7 +56,35 @@ export async function POST(request: NextRequest) {
             );
 
             const lastMessage = result.messages[result.messages.length - 1];
-            const reply = typeof lastMessage?.content === 'string' ? lastMessage.content : '...';
+            const reply = (() => {
+              for (let index = result.messages.length - 1; index >= 0; index -= 1) {
+                const message = result.messages[index] as any;
+                const content = message?.content;
+
+                if (typeof content === 'string' && content.trim()) {
+                  return content;
+                }
+
+                if (Array.isArray(content)) {
+                  const text = content
+                    .map((item: any) => {
+                      if (typeof item === 'string') return item;
+                      if (typeof item?.text === 'string') return item.text;
+                      return '';
+                    })
+                    .join('')
+                    .trim();
+                  if (text) return text;
+                }
+
+                if (content && typeof content === 'object' && typeof (content as any).text === 'string') {
+                  const text = (content as any).text.trim();
+                  if (text) return text;
+                }
+              }
+
+              return '...';
+            })();
 
             const chunkSize = 24;
             for (let index = 0; index < reply.length; index += chunkSize) {

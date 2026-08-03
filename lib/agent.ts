@@ -21,7 +21,8 @@ export async function createAgent(provider: ChatProvider = 'auto') {
   const model = await getChatModel(provider);
   const memory = getMemorySaver();
 
-  const llmWithTools = tools.length ? model.bindTools(tools) : model;
+  const useTools = Boolean(tavily && provider !== 'ollama');
+  const llmWithTools = useTools ? model.bindTools(tools) : model;
 
   const workflow = new StateGraph(MessagesAnnotation)
     .addNode('llm', async (state: any) => {
