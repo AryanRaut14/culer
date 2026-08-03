@@ -53,8 +53,9 @@ export async function POST(request: NextRequest) {
 
         controller.enqueue(encoder.encode(`\n\n[mode:${status.mode}]`));
       } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
         controller.enqueue(
-          encoder.encode('Culer is unavailable right now. Make sure Ollama is installed or add your free API keys to the environment file.\n\n[mode:cloud-fallback]'),
+          encoder.encode(`Culer is unavailable right now. ${message}\n\n[mode:cloud-fallback]`),
         );
       } finally {
         controller.close();

@@ -23,13 +23,20 @@ function loadEnvFromDisk() {
     }
 
     const key = line.slice(0, separatorIndex).trim();
-    const value = line.slice(separatorIndex + 1).trim();
+    const value = normalizeEnvValue(line.slice(separatorIndex + 1));
     if (!key || process.env[key] !== undefined) {
       continue;
     }
 
-    process.env[key] = value.replace(/^['"]|['"]$/g, '');
+    process.env[key] = value;
   }
+}
+
+function normalizeEnvValue(value: string | undefined) {
+  if (!value) {
+    return '';
+  }
+  return value.trim().replace(/^['"]|['"]$/g, '');
 }
 
 function getOllamaModelName() {
@@ -51,7 +58,7 @@ function makeGeminiModel() {
   return new ChatGoogleGenerativeAI({
     model: process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp',
     temperature: 0.7,
-    apiKey: process.env.GOOGLE_API_KEY,
+    apiKey: normalizeEnvValue(process.env.GOOGLE_API_KEY),
   });
 }
 
@@ -60,10 +67,7 @@ function makeGroqModel() {
   return new ChatGroq({
     model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
     temperature: 0.7,
-    apiKey: process.env.GROQ_API_KEY,
-  });
-}
-
+    apiKey: normalizeEnvValue(process.env.GROQ_API_KEY),
 export async function getChatModel() {
   loadEnvFromDisk();
 
