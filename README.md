@@ -1,6 +1,35 @@
-# Culer
+# 🔵🔴 Culer
 
-Culer is a fully local-first FC Barcelona chatbot. It prefers Ollama on your own machine, but it gracefully falls back to free Google Gemini and Groq APIs when the local model is unavailable.
+Culer is an AI-powered, local-first conversational assistant dedicated to all things FC Barcelona. Designed with privacy and reliability in mind, Culer prioritizes local execution via Ollama on your own hardware, with automatic fallback options to cloud APIs so your conversations never stall.
+
+---
+
+## About the Project
+
+**Culer** (named after the passionate FC Barcelona supporters) brings deep Barça knowledge directly to your terminal or browser. Built for privacy-conscious football fans, it ensures your data stays on your machine whenever possible while offering a fast, conversational interface.
+
+### Key Highlights
+* **🧠 Persistent Context & Memory:** Remembers previous turns in your conversation so you can ask natural follow-up questions about tactics, stats, match history, or players.
+* **⚡ Multi-Provider Fallback:** Prefers local execution via Ollama, but gracefully falls back to free Google Gemini or Groq APIs if your local model is offline or busy.
+* **🔒 Local-First & Private:** Chat freely without mandatory account signups or data tracking.
+
+## Screenshots
+
+<p align="center">
+  <img src="images/culer_working1.png" alt="Culer chatbot home screen" width="800" />
+</p>
+
+<p align="center">
+  <img src="images/culer_working2.png" alt="Culer chatbot in use" width="800" />
+</p>
+
+<p align="center">
+  <img src="images/culer_working3.png" alt="Culer chatbot response" width="800" />
+</p>
+
+<p align="center">
+  <img src="images/culer_working4.png" alt="Culer chatbot interface" width="800" />
+</p>
 
 ## Setup
 
